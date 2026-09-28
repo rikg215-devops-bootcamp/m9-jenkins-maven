@@ -38,11 +38,12 @@ pipeline {
                     echo 'deploying docker image to EC2...'
 
                     def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
+                    def ec2Instance = "ec2-user@18.217.105.101"
 
                     sshagent(credentials: ['ec2-server'], executable: '') {
-                        sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ec2-user@18.217.105.101:/home/ec2-user"
-                        sh "scp -o StrictHostKeyChecking=no server-cmds.sh ec2-user@18.217.105.101:/home/ec2-user"
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@18.217.105.101 '${shellCmd}'"
+                        sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2Instance}:/home/ec2-user"
+                        sh "scp -o StrictHostKeyChecking=no server-cmds.sh ${ec2Instance}:/home/ec2-user"
+                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} '${shellCmd}'"
                     }
                 }
             }
