@@ -13,7 +13,7 @@ pipeline {
         maven 'maven-tool'
     }
     environment {
-        IMAGE_NAME = 'rik215/bootcamp-test:java-maven-1.0'
+        IMAGE_NAME = 'rik215/bootcamp-test:java-maven-2.0'
     }
     stages {
         stage('build app') {
@@ -35,8 +35,10 @@ pipeline {
         stage("deploy") {
             steps {
                 script {
-                    def shellCmd = "bash ./server-cmds.sh"
                     echo 'deploying docker image to EC2...'
+
+                    def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
+
                     sshagent(credentials: ['ec2-server'], executable: '') {
                         sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ec2-user@18.217.105.101:/home/ec2-user"
                         sh "scp -o StrictHostKeyChecking=no server-cmds.sh ec2-user@18.217.105.101:/home/ec2-user"
