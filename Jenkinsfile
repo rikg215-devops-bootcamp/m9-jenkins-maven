@@ -14,7 +14,8 @@ pipeline {
     }
     stages {
         stage('increment version') {
-            script {
+            steps {
+                script {
                 echo 'incrementing version...'
                     sh 'mvn build-helper:parse-version versions:set \
                        -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
@@ -22,6 +23,7 @@ pipeline {
                     def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
                     def version = matcher[0][1]
                     env.IMAGE_NAME = "$version-$BUILD_NUMBER"
+                }
             }
         }
         stage('build app') {
@@ -57,7 +59,8 @@ pipeline {
             }
         }
         stage("commit version update") {
-            script {
+            steps {
+                script {
                 withCredentials([usernamePassword(credentialsId: 'github_pat', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                         sh 'git config --global user.email "jenkins@example.com"'
                         sh 'git config --global user.name "jenkins"'
@@ -70,6 +73,7 @@ pipeline {
                         sh 'git add .'
                         sh 'git commit -m "ci: version bump"'
                         sh 'git push origin HEAD:jenkins-jobs'
+                    }
                 }
             }
         }
